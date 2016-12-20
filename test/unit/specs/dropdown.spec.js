@@ -147,4 +147,39 @@ describe('Dropdown', () => {
       }, 300);
     }, 300);
   });
+  it('menu click notHideWhenClick', done => {
+    vm = createVue({
+      template: `
+        <el-dropdown ref="dropdown" notHideWhenClick>
+          <span class="el-dropdown-link">
+            下拉菜单<i class="el-icon-caret-bottom el-icon-right"></i>
+          </span>
+          <el-dropdown-menu slot="dropdown" class="dropdown-test-menu-click">
+            <el-dropdown-item command="a">黄金糕</el-dropdown-item>
+            <el-dropdown-item command="b">狮子头</el-dropdown-item>
+            <el-dropdown-item ref="commandC" command="c">螺蛳粉</el-dropdown-item>
+            <el-dropdown-item command="d">双皮奶</el-dropdown-item>
+            <el-dropdown-item command="e">蚵仔煎</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+      `
+    }, true);
+    let dropdown = vm.$refs.dropdown;
+    let dropdownElm = dropdown.$el;
+    let triggerElm = dropdownElm.children[0];
+    let callback = sinon.spy();
+
+    dropdown.$on('command', callback);
+
+    triggerEvent(triggerElm, 'mouseenter');
+    setTimeout(_ => {
+      vm.$refs.commandC.$el.click();
+      setTimeout(_ => {
+        expect(dropdown.visible).to.true;
+        expect(callback.calledWith('c')).to.be.true;
+        destroyVM(vm);
+        done();
+      }, 300);
+    }, 300);
+  });
 });
